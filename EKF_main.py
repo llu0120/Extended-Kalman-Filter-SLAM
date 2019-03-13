@@ -322,12 +322,11 @@ class EKF():
     
 if __name__ == '__main__':
     myEKF = EKF()
-	# (a) IMU Localization via EKF Prediction
+	#IMU Localization via EKF Prediction
     mu_list = myEKF.prediction()
-	# (b) Landmark Mapping via EKF Update
+	#Landmark Mapping via EKF Update
     myEKF.update(mu_list)
-    
-	# (c) Visual-Inertial SLAM (Extra Credit)
+	#Visual-Inertial SLAM
     result_pose = myEKF.vslam(mu_list)
 	# You can use the function below to visualize the robot pose over time
 	#visualize_trajectory_2d(world_T_imu,show_ori=True)
