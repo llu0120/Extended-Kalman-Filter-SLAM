@@ -25,7 +25,7 @@ def getu_head(hat,velocity):
     return u_head
 
 def getpredict_mu(dt,u_head,mu_t_t):
-    output = np.dot(expm(-dt*u_head),mu_t_t)
+    output = expm(-dt*u_head) @ mu_t_t
     return output
 
 def getu_vee(omega_hat,v_hat):
@@ -45,7 +45,7 @@ def getu_vee(omega_hat,v_hat):
     return u_vee
 
 def getpredict_cov(dt,u_vee,cov_t_t,noise_w): 
-    output = np.dot(np.dot(expm(-dt*u_vee),cov_t_t),expm(-dt*u_vee)) + (dt**2)*noise_w*np.identity(6)
+    output = expm(-dt*u_vee) @ cov_t_t @ expm(-dt*u_vee) + (dt**2)*noise_w
     return output 
 
 def getM(k,b):
@@ -62,16 +62,25 @@ def getM(k,b):
     return M
 
 def getz(feature,M):
-    output =  (-M[2,3])/ (feature[0] - feature[2]) 
-    return output
+    d = feature[0] - feature[2]
+    fsub = -M[2,3]
+    z =  fsub / d 
+    return z
 
 def jacobian(function):
-    matrix = np.array([[1,0,-(function[0]/function[2]),0],[0,1,-(function[1]/function[2]),0],[0,0,0,0],[0,0,-(function[3]/function[2]),1]])
+    function = function.squeeze()
+    matrix = np.array([[1,0,-(function[0]/function[2]),0],
+                       [0,1,-(function[1]/function[2]),0],
+                       [0,0,0,0],
+                       [0,0,-(function[3]/function[2]),1]])
     output = matrix / function[2]
     return output
 
 def getcircle(m):
-    output = [[1,0,0,0,m[2],-m[1]],[0,1,0,-m[2],0,m[0]],[0,0,1,m[1],-m[0],0],[0,0,0,0,0,0]]
+    output = [[1,0,0,0,m[2],-m[1]],
+              [0,1,0,-m[2],0,m[0]],
+              [0,0,1,m[1],-m[0],0],
+              [0,0,0,0,0,0]]
     return output
 
 
